@@ -2,15 +2,10 @@ document.addEventListener('DOMContentLoaded', init, false);
 
 function init()
 {
-    console.log("\"site\" loaded");
-    document.getElementById("testButton").onclick = loadPosts;
+    document.getElementById("testButton").onclick = openRCSGOTTab;
 }
 
-function loadPosts()
+function openRCSGOTTab()
 {
-    var xhr = new XMLHttpRequest()
-    xhr.open("GET", "http://www.reddit.com/r/GlobalOffensiveTrade/.json", true)
-    xhr.send();
-    //console.log(JSON.parse(xhr.response));
-    chrome.tabs.create({ "active": true });
+    chrome.tabs.create({"url":"../html/rcsgot.html", "active": true });
 }

@@ -7,7 +7,8 @@
 
   "permissions": [
     "http://www.reddit.com/*",
-    "http://steamcommunity.com/*",
+    "https://steamcommunity.com/*",
+    "https://steamcommunity.com/*",
     "tabs"
   ],
   "browser_action": {
