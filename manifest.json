@@ -8,7 +8,9 @@
   "permissions": [
     "http://www.reddit.com/*",
     "https://steamcommunity.com/*",
-    "https://steamcommunity.com/*",
+    "http://steamcommunity.com/*",
+    "http://whatsmyuseragent.com/Analyze/*",
+    "http://www.lugeoul.com/*",
     "tabs"
   ],
   "browser_action": {
