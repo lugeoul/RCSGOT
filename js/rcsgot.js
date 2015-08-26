@@ -1,16 +1,14 @@
 ﻿//<script src="../js/rcsgot.js"></script>
 
-document.addEventListener('DOMContentLoaded', loadReddit, false);
+document.addEventListener('DOMContentLoaded', LoadReddit, false);
 
 var xhr;
 var app = [];
-var html_ActualPages = document.implementation.createHTMLDocument("temp");
 app["Counter-Strike: Global Offensive"] = 730;
 
 
 var s_JSON = '{';
 var actualPage = 0;
-var html_ActualPages;
 var lastCycle = false;
 var steamMarketJSON;
 
@@ -20,58 +18,94 @@ var newestComment = 0;
 
 var continueLoading = true;
 
-function loadReddit()
+function LoadReddit()
 {
     xhr = new XMLHttpRequest();
-    xhr.open("GET", "https://www.reddit.com/r/GlobalOffensiveTrade/new/.json", true);
+    xhr.open("GET", "https://www.reddit.com/r/GlobalOffensiveTrade/search.json?sort=new&restrict_sr=on&q=flair%3AStore&feature=legacy_search", true);
     xhr.send();
     xhr.onreadystatechange = function ()
     {
         if (xhr.readyState == 4 && xhr.status == 200)
         {
             redditComments = JSON.parse(xhr.responseText).data.children;
-
             for (var i = redditComments.length; i > 0; i--)
             {
                 if (redditComments[i - 1].data.created > newestComment)
                 {
-                    console.log("new comment!! time:" + redditComments[i - 1].data.created);
-                    displayComment(redditComments[i - 1].data);
+                    console.log("new comment!! time:" + redditComments[i - 1].data.created + "name: " + redditComments[i - 1].data.title);
+                    DisplayComment(redditComments[i - 1].data);
                     newestComment = redditComments[i - 1].data.created;
                 }
             }
         }
     };
     if (continueLoading)
-        setTimeout(function () { loadReddit() }, 2000);
+    {
+        setTimeout(function () { LoadReddit( )}, 5000);
+    }
 }
 
 var test = document.createElement('div');
+var elementsToColor = [];
 
-function displayComment(comment)
+function DisplayComment(comment)
 {
     test.innerHTML = comment.selftext_html;
-    document.getElementsByClassName('contents')[0].innerHTML =
+    document.getElementById('content').innerHTML =
+        "<div id ='" + comment.id + "'>" +
         comment.title +
         "</br>---------------------------------------------------------------------------------------------</br>" +
         test.innerText +
         "</br>=============================================================================================</br>" +
         "=============================================================================================</br></br>" +
-        document.getElementsByClassName('contents')[0].innerHTML;
+        "<div>" +
+        document.getElementById('content').innerHTML;
+    document.getElementById(comment.id).style.backgroundColor = RGBToHex(250, 100, 0);
 }
 
-function notScannedYet()
+function NotScannedYet()
 {
     
 }
 
 
-function scanComment()
+function ScanComment()
 {
 
 }
 
+function UnColor()
+{
+    for(var i = 0; i < redditComments.length; i++)
+    {
+        document.getElementById(comment.id).style.backgroundColor = RGBToHex(255, 255, 255);
+    }
+}
 
+var hexLetters = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"];
+
+function ColorComponentToHex(intValue)
+{
+    if (intValue > 255 || intValue < 0)
+    {
+        console.log("value has to be between 0 (included) and 255 (excluded)");
+        return;
+    }
+    
+    var hexString = "";
+    hexString += hexLetters[Math.floor(intValue / 16)];
+    hexString += hexLetters[intValue % 16];
+    return hexString;
+}
+
+function RGBToHex(r, g, b)
+{
+    var hexColor = "#";
+    hexColor += ColorComponentToHex(r);
+    hexColor += ColorComponentToHex(g);
+    hexColor += ColorComponentToHex(b);
+    return hexColor;
+}
 
 //var xhr;
 //var app = [];
