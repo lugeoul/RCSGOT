@@ -17,6 +17,11 @@ var redditComments;
 var newestComment = 0;
 
 var continueLoading = true;
+var colorAdd = 1;
+
+var playUncolor = true;
+var unColorStarted = false;
+var firstRun = true;
 
 function LoadReddit()
 {
@@ -32,21 +37,59 @@ function LoadReddit()
             {
                 if (redditComments[i - 1].data.created > newestComment)
                 {
-                    console.log("new comment!! time:" + redditComments[i - 1].data.created + "name: " + redditComments[i - 1].data.title);
+                    if (!firstRun)
+                        NotifyNewTrade(redditComments[i - 1].data.title);
+                    //console.log("new comment!! time:" + redditComments[i - 1].data.created + "name: " + redditComments[i - 1].data.title);
                     DisplayComment(redditComments[i - 1].data);
                     newestComment = redditComments[i - 1].data.created;
                 }
             }
+            firstRun = false;
         }
     };
     if (continueLoading)
     {
+        if (!unColorStarted)
+        {
+            setInterval(UnColor, 15);
+            unColorStarted = true;
+        }
         setTimeout(function () { LoadReddit( )}, 5000);
     }
+    console.log("reload");
 }
 
 var test = document.createElement('div');
-var elementsToColor = [];
+var elementsToUnColor = [];
+
+function NotifyNewTrade(message)
+{
+    if (!("Notification" in window))
+    {
+        alert("This browser does not support desktop notification");
+    }
+    else if (Notification.permission === "granted")
+    {
+        var notification = new Notification(message);
+        
+        notification.onclick = function (x) { window.focus(); };
+    }
+    else if (Notification.permission !== 'denied')
+    {
+        Notification.requestPermission
+        (
+            function (permission)
+            {
+                if (permission === "granted")
+                {
+                    var notification = new Notification(message);
+                    notification.onclick = function (x) { window.focus(); };
+                }
+            }
+        );
+    }
+}
+
 
 function DisplayComment(comment)
 {
@@ -54,13 +97,17 @@ function DisplayComment(comment)
     document.getElementById('content').innerHTML =
         "<div id ='" + comment.id + "'>" +
         comment.title +
+        "</br></br>" +
+        comment.created +
         "</br>---------------------------------------------------------------------------------------------</br>" +
         test.innerText +
-        "</br>=============================================================================================</br>" +
-        "=============================================================================================</br></br>" +
+        "</br>==========================================================================================================================================================================================</br>" +
+        "==========================================================================================================================================================================================</br>" +
+        "==========================================================================================================================================================================================</br></br>" +
         "<div>" +
         document.getElementById('content').innerHTML;
-    document.getElementById(comment.id).style.backgroundColor = RGBToHex(250, 100, 0);
+    document.getElementById(comment.id).style.backgroundColor = RGBToHex([220, 0, 0]);
+    elementsToUnColor.push(comment.id);
 }
 
 function NotScannedYet()
@@ -76,21 +123,35 @@ function ScanComment()
 
 function UnColor()
 {
-    for(var i = 0; i < redditComments.length; i++)
+    for (var i = 0; i < elementsToUnColor.length; i++)
     {
-        document.getElementById(comment.id).style.backgroundColor = RGBToHex(255, 255, 255);
+        var rgb = ColorStringToRGB(document.getElementById(elementsToUnColor[i]).style.backgroundColor);
+        rgb[0] = +rgb[0] + colorAdd;
+        rgb[1] = +rgb[1] + colorAdd;
+        rgb[2] = +rgb[2] + colorAdd;
+        document.getElementById(elementsToUnColor[i]).style.backgroundColor = "rgb(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ")";
+
+        if(rgb[0] >= 255 && rgb[1] >= 255 && rgb[2] >= 255)
+        {
+            elementsToUnColor.splice(i, 1);
+            i--;
+        }
     }
+}
+
+function ColorStringToRGB(hex)
+{
+    return hex.substring(4, hex.length - 1).replace(/ /g, '').split(',');
 }
 
 var hexLetters = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"];
 
 function ColorComponentToHex(intValue)
 {
-    if (intValue > 255 || intValue < 0)
-    {
-        console.log("value has to be between 0 (included) and 255 (excluded)");
-        return;
-    }
+    if (intValue > 255)
+        intValue = 255;
+    else if (intValue < 0)
+        intValue = 0;
     
     var hexString = "";
     hexString += hexLetters[Math.floor(intValue / 16)];
@@ -98,12 +159,12 @@ function ColorComponentToHex(intValue)
     return hexString;
 }
 
-function RGBToHex(r, g, b)
+function RGBToHex(rgb)
 {
     var hexColor = "#";
-    hexColor += ColorComponentToHex(r);
-    hexColor += ColorComponentToHex(g);
-    hexColor += ColorComponentToHex(b);
+    hexColor += ColorComponentToHex(rgb[0]);
+    hexColor += ColorComponentToHex(rgb[1]);
+    hexColor += ColorComponentToHex(rgb[2]);
     return hexColor;
 }
 
