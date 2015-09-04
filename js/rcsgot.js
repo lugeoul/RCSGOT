@@ -30,6 +30,7 @@ function LoadReddit()
     xhr.send();
     xhr.onreadystatechange = function ()
     {
+        console.log(xhr.status);
         if (xhr.readyState == 4 && xhr.status == 200)
         {
             redditComments = JSON.parse(xhr.responseText).data.children;
@@ -51,6 +52,7 @@ function LoadReddit()
     {
         if (!unColorStarted)
         {
+            
             setInterval(UnColor, 15);
             unColorStarted = true;
         }
@@ -61,6 +63,28 @@ function LoadReddit()
 
 var test = document.createElement('div');
 var elementsToUnColor = [];
+
+function DisplayComment(comment)
+{
+    test.innerHTML = comment.selftext_html;
+    document.getElementById('content').innerHTML =
+        "<div id ='" + comment.id + "'>" +
+        "<b style='font-size: 20px'>" + comment.title + "</b>" +
+        "</br></br>" +
+        (new Date(comment.created_utc * 1000)).toUTCString() +
+        "</br>" +
+        new Date().toUTCString() +
+        "</br>---------------------------------------------------------------------------------------------</br>" +
+        test.innerText +
+        "</br>" +
+        "██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████</br>" +
+        "██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████</br>" +
+        "██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████</br></br>" +
+        "<div>" +
+        document.getElementById('content').innerHTML;
+    document.getElementById(comment.id).style.backgroundColor = RGBToHex([220, 0, 0]);
+    elementsToUnColor.push(comment.id);
+}
 
 function NotifyNewTrade(message)
 {
@@ -91,24 +115,6 @@ function NotifyNewTrade(message)
 }
 
 
-function DisplayComment(comment)
-{
-    test.innerHTML = comment.selftext_html;
-    document.getElementById('content').innerHTML =
-        "<div id ='" + comment.id + "'>" +
-        comment.title +
-        "</br></br>" +
-        comment.created +
-        "</br>---------------------------------------------------------------------------------------------</br>" +
-        test.innerText +
-        "</br>==========================================================================================================================================================================================</br>" +
-        "==========================================================================================================================================================================================</br>" +
-        "==========================================================================================================================================================================================</br></br>" +
-        "<div>" +
-        document.getElementById('content').innerHTML;
-    document.getElementById(comment.id).style.backgroundColor = RGBToHex([220, 0, 0]);
-    elementsToUnColor.push(comment.id);
-}
 
 function NotScannedYet()
 {
